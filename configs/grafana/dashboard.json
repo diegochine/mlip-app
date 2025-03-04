@@ -1,0 +1,61 @@
+{
+    "annotations": {
+      "list": []
+    },
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "targets": [
+          {
+            "expr": "rate(app_requests_total[5m])",
+            "format": "time_series",
+            "interval": "",
+            "legendFormat": "{{method}} {{endpoint}} ({{http_status}})",
+            "refId": "A"
+          }
+        ],
+        "title": "Request Rate",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 4,
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(app_request_latency_seconds_bucket[5m])) by (le, endpoint))",
+            "format": "time_series",
+            "interval": "",
+            "legendFormat": "{{endpoint}} 95th Percentile",
+            "refId": "A"
+          }
+        ],
+        "title": "95th Percentile Request Latency",
+        "type": "timeseries"
+      }
+    ],
+    "schemaVersion": 30,
+    "version": 1,
+    "title": "MLIP App Monitoring Dashboard"
+  }
+  
