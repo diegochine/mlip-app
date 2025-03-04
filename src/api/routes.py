@@ -34,3 +34,13 @@ def predict():
         return jsonify({"predictions": predictions.tolist()})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@api_bp.route('/retrain', methods=['POST'])
+def retrain():
+    try:
+        # Trigger model retraining by calling the training pipeline.
+        from src.model import train as model_train
+        model_train.main()
+        return jsonify({"message": "Model retrained and deployed successfully."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

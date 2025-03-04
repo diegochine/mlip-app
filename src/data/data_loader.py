@@ -10,7 +10,7 @@ def load_data(file_path=None):
         # Default file path for sample data (ensure you provide 'sample_data.csv' in the same folder)
         file_path = os.path.join(os.path.dirname(__file__), "sample_data.csv")
     try:
-        data = pd.read_csv(file_path)
+        data = pd.read_csv(file_path, delimiter=';')
     except Exception as e:
         raise Exception(f"Failed to load data from {file_path}: {e}")
     return data

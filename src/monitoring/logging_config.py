@@ -2,7 +2,7 @@ import logging
 import sys
 
 def setup_logging():
-    # Configure structured logging in JSON format for production-grade logs.
+    # Configure structured logging in JSON format.
     formatter = logging.Formatter(
         '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
     )
