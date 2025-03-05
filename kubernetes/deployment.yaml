@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlip-app-deployment
+  labels:
+    app: mlip-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mlip-app
+  template:
+    metadata:
+      labels:
+        app: mlip-app
+    spec:
+      containers:
+      - name: mlip-app
+        image: your_docker_registry/mlip-app:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+          - name: FLASK_ENV
+            value: "production"
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: mlip-app-secret
+                key: secret_key
