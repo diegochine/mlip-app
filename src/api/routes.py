@@ -1,6 +1,7 @@
-from flask import Blueprint, request, jsonify
 import os
-import pickle
+import base64
+from flask import Blueprint, request, jsonify
+import requests
 from src.config import Config
 
 api_bp = Blueprint('api', __name__)
@@ -9,6 +10,7 @@ def load_model():
     model_path = Config.MODEL_PATH
     if not os.path.exists(model_path):
         raise Exception("Model not found. Please train the model first.")
+    import pickle
     with open(model_path, 'rb') as f:
         model = pickle.load(f)
     return model
@@ -38,9 +40,28 @@ def predict():
 @api_bp.route('/retrain', methods=['POST'])
 def retrain():
     try:
-        # Trigger model retraining by calling the training pipeline.
-        from src.model import train as model_train
-        model_train.main()
-        return jsonify({"message": "Model retrained and deployed successfully."})
+        # Airflow REST API endpoint for triggering a DAG run
+        airflow_url = "http://airflow-webserver:8080/api/v1/dags/retraining_pipeline/dagRuns"
+        
+        # Retrieve Airflow credentials from environment variables
+        username = os.environ.get("AIRFLOW_USERNAME", "airflow")
+        password = os.environ.get("AIRFLOW_PASSWORD", "airflow")
+        
+        # Create a Basic Auth header
+        credentials = f"{username}:{password}"
+        encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Basic {encoded_credentials}"
+        }
+        
+        # Payload for the DAG run, adjust if necessary
+        payload = {"conf": {}}
+        
+        response = requests.post(airflow_url, headers=headers, json=payload)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        
+        return jsonify({"message": "Retraining pipeline triggered successfully via Airflow API."})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
